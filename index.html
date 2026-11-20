@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đảo Đèn Lồng</title>
+  <style>
+    body { margin: 0; background: #120d25; color: #fff; font-family: system-ui; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #hud { position: fixed; inset: 0; pointer-events: none; padding: 22px; text-shadow: 0 2px 4px #000; font-weight: 700; }
+    #help { position: absolute; bottom: 22px; color: #ddd; font-size: 14px; }
+    #banner { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(28px, 6vw, 64px); text-align: center; background: #100a1baa; }
+  </style>
+</head>
+<body>
+  <canvas></canvas>
+  <div id="hud">
+    <div id="stats"></div>
+    <div id="help">WASD: di chuyển · Q: nhảy · E: nạp/châm đèn · Space: tỏa sáng · Shift: dash · C: chế độ mù màu · R: chơi lại</div>
+    <div id="banner">ĐẢO ĐÈN LỒNG<br><small>Nhấn WASD để bắt đầu</small></div>
+  </div>
+  <script src="src/sim/player.js"></script>
+  <script src="src/sim/map.js"></script>
+  <script src="src/sim/lantern.js"></script>
+  <script src="src/sim/jsonl.js"></script>
+  <script src="src/sim/drifter.js"></script>
+  <script src="game.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

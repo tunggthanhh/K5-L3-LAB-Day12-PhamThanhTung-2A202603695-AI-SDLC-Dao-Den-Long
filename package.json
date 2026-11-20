@@ -1,0 +1,10 @@
+{
+  "name": "dao-den-long",
+  "version": "1.0.0-phase1",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "headless": "node headless.js",
+    "test": "node tests/contract-smoke.js && node tests/phase3-fuel.js"
+  }
+}
