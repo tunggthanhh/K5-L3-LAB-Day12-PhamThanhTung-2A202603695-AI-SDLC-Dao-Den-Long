@@ -1381,7 +1381,24 @@
     elCdDash.style.height = `${dashCdPct * 100}%`;
 
     // 6. Interactive Prompt
-    const nearestLantern = LanternGame.LanternRules.nearest(
+    const getNearestLantern = (player, lanterns, radius, fuelMax) => {
+      if (typeof LanternRules !== "undefined" && LanternRules && typeof LanternRules.nearest === "function") {
+        return LanternRules.nearest(player, lanterns, radius, fuelMax);
+      }
+      const max = fuelMax !== undefined ? fuelMax : 100;
+      return lanterns
+        .filter((l) => {
+          const d = Math.hypot(player.pos[0] - l.pos[0], player.pos[2] - l.pos[2]);
+          return d <= radius && (!l.lit || (l.lit && l.fuel < max));
+        })
+        .sort((a, b) => {
+          const da = Math.hypot(player.pos[0] - a.pos[0], player.pos[2] - a.pos[2]);
+          const db = Math.hypot(player.pos[0] - b.pos[0], player.pos[2] - b.pos[2]);
+          return da - db || a.id.localeCompare(b.id);
+        })[0];
+    };
+
+    const nearestLantern = getNearestLantern(
       sim.player,
       sim.lanterns,
       LanternGame.T.interact_radius,
