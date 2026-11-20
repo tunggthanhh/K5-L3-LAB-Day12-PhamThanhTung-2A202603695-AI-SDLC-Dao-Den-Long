@@ -30,3 +30,4 @@
 - Tách simulation logic khỏi render tiếp tục phát huy hiệu quả.
 - Test-driven approach: viết test trước, chạy, debug → đảm bảo không có "claim không có bằng chứng".
 - Nếu làm lại: thêm test unit cho `nearest()` riêng lẻ trước khi tích hợp vào game.js.
+

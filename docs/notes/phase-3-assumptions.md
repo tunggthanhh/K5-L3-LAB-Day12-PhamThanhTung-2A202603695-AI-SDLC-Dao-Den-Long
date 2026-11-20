@@ -21,3 +21,4 @@
 9. **Colorblind mode**: Lưu vào `localStorage["colorblind"]`. Phím `C` toggle. Chỉ ảnh hưởng render, không ảnh hưởng simulation/headless output.
 
 10. **Night duration**: 240/270/300s cho Night 1/2/3 — đã có từ Phase 2, giữ nguyên.
+

@@ -40,3 +40,4 @@ phase 3 fuel test passed (33 assertions, 0 failures)
 - `contract_version` nâng lên `1.2`
 
 Xem chi tiết: [CHANGELOG.md](../../CHANGELOG.md) và [ADR-003](../notes/ADR-003-lantern-fuel.md).
+
