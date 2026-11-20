@@ -1,6 +1,6 @@
 # ĐẢO ĐÈN LỒNG — Lantern Island (v1.0.0)
 
-> 📹 **Video Demo**: [docs/demo/demo.mp4](docs/demo/demo.mp4) (hoặc xem trực tiếp tại GitHub Release [v1.0.0](../../releases/tag/v1.0.0))  
+> 📹 **Video Demo**: [[docs/demo/demo.mp4](docs/demo/demo.mp4)](https://drive.google.com/drive/folders/1vmFlnt9B-o0iUmCWQxNgXbZcoz0RVNvg) (hoặc xem trực tiếp tại GitHub Release [v1.0.0](../../releases/tag/v1.0.0))  
 > 🏷️ **Bản phát hành**: `v1.0.0` · **Tags**: `phase-1`, `phase-2`, `phase-3`, `phase-4`  
 > 📜 **Test Contract**: `v1.3` (Kèm Benchmark & Soak Test chuẩn)
 
