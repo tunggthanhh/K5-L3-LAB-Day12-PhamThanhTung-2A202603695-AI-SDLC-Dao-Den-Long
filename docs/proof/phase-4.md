@@ -35,13 +35,13 @@ Kết quả đo thực tế:
 
 | Chỉ số | Giá trị đo được | Ngưỡng yêu cầu | Đánh giá |
 |---|---|---|---|
-| `avg_fps` | **80.9** FPS | $\ge 60$ FPS | ✅ ĐẠT |
-| `p1_low_fps` | **67.3** FPS | $\ge 30$ FPS | ✅ ĐẠT |
-| `frame_ms_p95` | **13.33** ms | -- | Mượt mà ổn định |
-| `load_ms` | **123** ms | $\le 10000$ ms | ✅ ĐẠT |
-| `peak_mem_mb` | **43** MB | Tối ưu | Không tốn RAM |
+| `avg_fps` | **79.9** FPS | $\ge 60$ FPS | ✅ ĐẠT |
+| `p1_low_fps` | **41.9** FPS | $\ge 30$ FPS | ✅ ĐẠT |
+| `frame_ms_p95` | **13.39** ms | -- | Mượt mà ổn định |
+| `load_ms` | **126** ms | $\le 10000$ ms | ✅ ĐẠT |
+| `peak_mem_mb` | **46** MB | Tối ưu | Không tốn RAM |
 | `vsync_off` | **true** | true | ✅ ĐẠT |
-| `frames` | **2422** | -- | Đầy đủ mẫu đo |
+| `frames` | **2390** | -- | Đầy đủ mẫu đo |
 
 ---
 
@@ -58,9 +58,9 @@ Kết quả kiểm tra tính ổn định:
 |---|---|---|---|
 | `nights` | **10** đêm liên tiếp | 10 | ✅ ĐẠT |
 | `crashes` | **0** lần crash | = 0 | ✅ ĐẠT |
-| `mem_start_mb` | **39** MB | -- | Mức nền ban đầu |
-| `mem_end_mb` | **43** MB | $\le 1.2 \times 39 = 46.8$ MB | ✅ ĐẠT (Không rò rỉ bộ nhớ) |
-| `duration_s` | **0.2** s | Hoàn tất | Headless siêu tốc |
+| `mem_start_mb` | **42** MB | -- | Mức nền ban đầu |
+| `mem_end_mb` | **45** MB | $\le 1.2 \times 42 = 50.4$ MB | ✅ ĐẠT (Không rò rỉ bộ nhớ) |
+| `duration_s` | **0.3** s | Hoàn tất | Headless siêu tốc |
 
 ---
 

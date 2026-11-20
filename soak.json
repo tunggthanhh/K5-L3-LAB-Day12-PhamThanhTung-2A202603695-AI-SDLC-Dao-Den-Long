@@ -13,7 +13,7 @@
     "lost",
     "lost"
   ],
-  "mem_start_mb": 39,
-  "mem_end_mb": 42,
-  "duration_s": 0.2
+  "mem_start_mb": 42,
+  "mem_end_mb": 45,
+  "duration_s": 0.3
 }

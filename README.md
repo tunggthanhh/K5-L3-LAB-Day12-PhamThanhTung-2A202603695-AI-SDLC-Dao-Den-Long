@@ -74,7 +74,7 @@ node headless.js --seed 42 --night 1 --ticks 180 --out proof.jsonl
 npm run bench
 # Hoặc: node bench.js --seed 42 --duration 30 --out bench.json
 ```
-*Khởi tạo cảnh tải nặng (200 Bóng Mực, 100 đom đóm, camera quay vòng 360°), đo FPS thực tế trong 30s. Kết quả đo được: **Avg FPS ~81 > 60**, **P1 Low ~67 > 30**, **Load time: 123ms <= 10000ms**.*
+*Khởi tạo cảnh tải nặng (200 Bóng Mực, 100 đom đóm, camera quay vòng 360°), đo FPS trong 30s. Lần đo gần nhất: **Avg FPS 79.9 > 60**, **P1 Low 41.9 > 30**, **Load time: 126ms <= 10000ms**.*
 
 ### D. Chế độ Soak Test 10 Đêm (Ticket-04)
 ```bash
