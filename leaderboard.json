@@ -1,0 +1,14 @@
+{
+  "entries": [
+    { "name": "May_Hero", "score": 750, "nights_won": 3, "achieved_at": "2026-11-20T10:00:00.000Z", "seed": 42 },
+    { "name": "Lien_Hoa", "score": 680, "nights_won": 3, "achieved_at": "2026-11-20T11:15:00.000Z", "seed": 7 },
+    { "name": "Doan_Vien", "score": 590, "nights_won": 2, "achieved_at": "2026-11-20T12:30:00.000Z", "seed": 15 },
+    { "name": "Anh_Trang", "score": 520, "nights_won": 2, "achieved_at": "2026-11-20T13:45:00.000Z", "seed": 21 },
+    { "name": "Bao_Ve", "score": 450, "nights_won": 2, "achieved_at": "2026-11-20T14:00:00.000Z", "seed": 3 },
+    { "name": "Thap_Sang", "score": 380, "nights_won": 1, "achieved_at": "2026-11-20T14:30:00.000Z", "seed": 9 },
+    { "name": "Gio_Dem", "score": 320, "nights_won": 1, "achieved_at": "2026-11-20T15:00:00.000Z", "seed": 12 },
+    { "name": "Dom_Dom", "score": 260, "nights_won": 1, "achieved_at": "2026-11-20T15:30:00.000Z", "seed": 18 },
+    { "name": "Bien_May", "score": 210, "nights_won": 0, "achieved_at": "2026-11-20T16:00:00.000Z", "seed": 25 },
+    { "name": "Tan_Tro", "score": 150, "nights_won": 0, "achieved_at": "2026-11-20T16:30:00.000Z", "seed": 33 }
+  ]
+}

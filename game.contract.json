@@ -1,9 +1,11 @@
 {
-  "contract_version": "1.2",
+  "contract_version": "1.3",
   "team": "2A202603695-PhamThanhTung",
   "build_cmd": "node --version",
   "run_cmd": "node server.js",
   "headless_cmd": "node headless.js",
+  "bench_cmd": "node bench.js",
+  "soak_cmd": "node soak.js",
   "tuning": {
     "player_speed": 6,
     "carry_capacity": 10,
@@ -37,6 +39,12 @@
     "shade_speed": 4,
     "shade_hit_radius": 1,
     "fall_enabled": false,
-    "score": { "per_mote": 0, "per_lantern": 100, "per_stun": 5, "per_second_left": 2, "per_flame_left": 50 }
+    "score": {
+      "per_mote": 0,
+      "per_lantern": 100,
+      "per_stun": 5,
+      "per_second_left": 0,
+      "per_flame_left": 50
+    }
   }
 }

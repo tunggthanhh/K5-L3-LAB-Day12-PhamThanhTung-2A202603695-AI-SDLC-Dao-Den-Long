@@ -1,10 +1,12 @@
 {
   "name": "dao-den-long",
-  "version": "1.0.0-phase1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node server.js",
     "headless": "node headless.js",
-    "test": "node tests/contract-smoke.js && node tests/phase3-fuel.js"
+    "bench": "node bench.js --seed 42 --duration 30 --out bench.json",
+    "soak": "node soak.js --seed 7 --nights 10 --out soak.json",
+    "test": "node tests/contract-smoke.js && node tests/phase3-fuel.js && node tests/phase4-release.js"
   }
 }

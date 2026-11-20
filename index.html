@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <title>ĐẢO ĐÈN LỒNG — Lantern Island</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <style>
     :root {
       --gold: #FFBF69;
@@ -13,8 +12,9 @@
       --deep-purple: #21142F;
       --safe-green: #44e57a;
       --danger-red: #FF5A5F;
-      --hud-bg: rgba(18, 15, 38, 0.78);
+      --hud-bg: rgba(18, 15, 38, 0.85);
       --hud-border: rgba(255, 191, 105, 0.45);
+      --font-scale: 1.0;
     }
     * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
     body {
@@ -22,9 +22,17 @@
       background: #0d0b1a;
       color: #fff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: calc(15px * var(--font-scale));
       overflow: hidden;
       width: 100vw;
       height: 100vh;
+    }
+    body.large-text {
+      --font-scale: 1.25;
+    }
+    body.reduced-motion * {
+      animation: none !important;
+      transition: none !important;
     }
     canvas {
       display: block;
@@ -66,7 +74,7 @@
       align-items: center;
       gap: 14px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
     .avatar-frame {
       width: 50px;
@@ -78,24 +86,20 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 14px rgba(255, 191, 105, 0.5);
-      position: relative;
     }
     .avatar-icon {
       font-size: 26px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
     .player-info {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
     .player-name {
-      font-size: 14px;
+      font-size: calc(13px * var(--font-scale));
       font-weight: 800;
-      letter-spacing: 1px;
       color: var(--light-gold);
       text-transform: uppercase;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
     .flames-row {
       display: flex;
@@ -105,7 +109,7 @@
     .flame-icon {
       font-size: 18px;
       filter: drop-shadow(0 0 6px #ff7b00);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      transition: transform 0.3s, opacity 0.3s;
     }
     .flame-icon.lost {
       opacity: 0.25;
@@ -125,18 +129,16 @@
       border-radius: 6px;
       border: 1px solid rgba(255,255,255,0.15);
       overflow: hidden;
-      position: relative;
     }
     .mote-bar-fill {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, #ffe066, #ff9f1c);
-      border-radius: 6px;
       box-shadow: 0 0 8px #ffb703;
       transition: width 0.25s ease-out;
     }
     .mote-label {
-      font-size: 12px;
+      font-size: calc(12px * var(--font-scale));
       font-weight: 700;
       color: #ffe8a3;
       min-width: 45px;
@@ -153,12 +155,11 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
     .stage-title {
-      font-size: 15px;
+      font-size: calc(15px * var(--font-scale));
       font-weight: 800;
       color: #fff;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(255, 191, 105, 0.6);
     }
     .lantern-track {
       display: flex;
@@ -170,7 +171,6 @@
     .lantern-pill {
       font-size: 18px;
       opacity: 0.35;
-      transform: scale(0.9);
       transition: all 0.3s;
       filter: grayscale(1);
     }
@@ -187,7 +187,7 @@
       50% { transform: scale(0.95); opacity: 0.5; }
     }
     .stage-goal {
-      font-size: 11px;
+      font-size: calc(11px * var(--font-scale));
       font-weight: 600;
       color: #cbd5e1;
       margin-top: 4px;
@@ -207,14 +207,13 @@
       gap: 4px;
     }
     .score-box {
-      font-size: 20px;
+      font-size: calc(20px * var(--font-scale));
       font-weight: 900;
       color: var(--gold);
-      text-shadow: 0 2px 8px rgba(255, 191, 105, 0.5);
       letter-spacing: 1px;
     }
     .timer-box {
-      font-size: 14px;
+      font-size: calc(14px * var(--font-scale));
       font-weight: 700;
       color: #e2e8f0;
       display: flex;
@@ -223,29 +222,64 @@
       gap: 6px;
     }
 
-    /* CONTEXT PROMPT (INTERACTION) */
+    /* SUBTITLES & ACCESSIBILITY ALERTS */
+    #subtitle-banner {
+      position: absolute;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 8, 24, 0.92);
+      border: 1.5px solid var(--gold);
+      border-radius: 20px;
+      padding: 8px 24px;
+      font-size: calc(14px * var(--font-scale));
+      font-weight: 800;
+      color: #FFE8A3;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+      z-index: 15;
+    }
+    #subtitle-banner.show {
+      display: flex;
+    }
+
+    /* EDGE THREAT ARROWS (Indicator for Shades) */
+    .threat-arrow {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      color: #ff5a5f;
+      font-size: 20px;
+      font-weight: 900;
+      display: none;
+      pointer-events: none;
+      z-index: 12;
+      text-shadow: 0 0 6px #000;
+    }
+
+    /* CONTEXT INTERACTION PROMPT */
     #interaction-prompt {
       position: absolute;
       top: 65%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      background: rgba(22, 17, 44, 0.9);
+      transform: translate(-50%, -50%);
+      background: rgba(22, 17, 44, 0.92);
       border: 2px solid var(--gold);
       border-radius: 30px;
       padding: 10px 24px;
-      font-size: 15px;
+      font-size: calc(15px * var(--font-scale));
       font-weight: 800;
       color: #fff;
       display: none;
       align-items: center;
       gap: 10px;
       box-shadow: 0 0 25px rgba(255, 191, 105, 0.6);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       z-index: 15;
     }
     #interaction-prompt.show {
       display: flex;
-      transform: translate(-50%, -50%) scale(1);
     }
     .key-badge {
       background: var(--gold);
@@ -253,10 +287,9 @@
       padding: 2px 10px;
       border-radius: 8px;
       font-weight: 900;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
 
-    /* BOTTOM BAR (CONTROLS & SKILLS) */
+    /* BOTTOM BAR */
     .bottom-bar {
       display: flex;
       justify-content: space-between;
@@ -290,13 +323,8 @@
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
       position: relative;
       overflow: hidden;
-    }
-    .skill-icon-frame.active {
-      border-color: var(--gold);
-      box-shadow: 0 0 12px rgba(255, 191, 105, 0.4);
     }
     .skill-cd-overlay {
       position: absolute;
@@ -304,16 +332,14 @@
       background: rgba(0,0,0,0.7);
       height: 0%;
       top: 0;
-      transition: height 0.05s linear;
     }
     .skill-key {
-      font-size: 10px;
+      font-size: calc(10px * var(--font-scale));
       font-weight: 800;
       color: #cbd5e1;
       background: rgba(0,0,0,0.4);
       padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.1);
     }
     .skill-cost {
       position: absolute;
@@ -337,7 +363,7 @@
       border: 1.5px solid var(--hud-border);
       border-radius: 16px;
       padding: 8px 16px;
-      font-size: 12px;
+      font-size: calc(12px * var(--font-scale));
       color: #cbd5e1;
       backdrop-filter: blur(8px);
       display: flex;
@@ -361,7 +387,7 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(10, 8, 22, 0.88);
+      background: rgba(10, 8, 22, 0.9);
       backdrop-filter: blur(12px);
       z-index: 50;
       display: none;
@@ -376,32 +402,26 @@
       background: linear-gradient(145deg, #241c44 0%, #15102a 100%);
       border: 2px solid var(--gold);
       border-radius: 28px;
-      padding: 40px;
-      max-width: 540px;
+      padding: 34px;
+      max-width: 580px;
       width: 100%;
       text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 35px rgba(255, 191, 105, 0.35);
       position: relative;
-      animation: modal-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes modal-pop {
-      from { transform: scale(0.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
     }
     .modal-title {
-      font-size: 32px;
+      font-size: calc(28px * var(--font-scale));
       font-weight: 900;
       letter-spacing: 2px;
       color: var(--light-gold);
-      text-shadow: 0 0 15px rgba(255, 191, 105, 0.6);
       margin-bottom: 12px;
       text-transform: uppercase;
     }
     .modal-subtitle {
-      font-size: 15px;
+      font-size: calc(14px * var(--font-scale));
       color: #cbd5e1;
       line-height: 1.6;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .modal-stats-grid {
       display: grid;
@@ -410,7 +430,7 @@
       background: rgba(0,0,0,0.3);
       padding: 16px;
       border-radius: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.08);
     }
     .stat-cell {
@@ -419,47 +439,46 @@
       gap: 4px;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: calc(11px * var(--font-scale));
       color: #94a3b8;
       text-transform: uppercase;
       font-weight: 700;
     }
     .stat-val {
-      font-size: 22px;
+      font-size: calc(22px * var(--font-scale));
       font-weight: 900;
       color: var(--gold);
     }
     .btn-action {
       background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
       color: #120d25;
-      font-size: 16px;
+      font-size: calc(15px * var(--font-scale));
       font-weight: 900;
       letter-spacing: 1px;
       border: none;
       border-radius: 30px;
-      padding: 14px 38px;
+      padding: 12px 32px;
       cursor: pointer;
       box-shadow: 0 6px 20px rgba(251, 133, 0, 0.45);
       transition: all 0.2s ease;
       text-transform: uppercase;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .btn-action:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 10px 25px rgba(251, 133, 0, 0.65);
+      transform: translateY(-2px) scale(1.02);
     }
     .btn-secondary {
       background: transparent;
       color: #cbd5e1;
       border: 1.5px solid rgba(255,255,255,0.25);
       border-radius: 30px;
-      padding: 12px 28px;
-      font-size: 14px;
+      padding: 11px 24px;
+      font-size: calc(13px * var(--font-scale));
       font-weight: 700;
       cursor: pointer;
-      margin-left: 10px;
+      margin-left: 8px;
       transition: all 0.2s;
     }
     .btn-secondary:hover {
@@ -467,16 +486,85 @@
       color: #fff;
     }
 
-    /* COLORBLIND OVERRIDES */
-    body.cb-mode {
-      --danger-red: #FFFFFF;
+    /* LEADERBOARD TABLE */
+    .lead-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: calc(13px * var(--font-scale));
+      text-align: left;
+    }
+    .lead-table th {
+      color: var(--gold);
+      border-bottom: 1.5px solid rgba(255, 191, 105, 0.4);
+      padding: 8px;
+    }
+    .lead-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: #e2e8f0;
+    }
+
+    /* KEY REBINDING FORM */
+    .key-rebind-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .rebind-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.3);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .rebind-btn {
+      background: #2a2046;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      min-width: 50px;
+      text-align: center;
+    }
+    .rebind-btn.recording {
+      background: #ff5a5f;
+      color: #fff;
+      animation: pulse-warn 0.8s infinite;
+    }
+
+    /* NAME INPUT FOR LEADERBOARD */
+    .name-input-box {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .name-input {
+      background: rgba(0,0,0,0.5);
+      border: 1.5px solid var(--gold);
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+      text-align: center;
+      width: 200px;
     }
   </style>
 </head>
 <body>
   <canvas></canvas>
 
-  <!-- HUD INTERFACE -->
+  <!-- HUD OVERLAY -->
   <div id="hud">
     <!-- TOP ROW -->
     <div class="top-bar">
@@ -503,7 +591,7 @@
 
       <!-- CENTER OBJECTIVE -->
       <div class="stage-card">
-        <div class="stage-title">Đêm 1 — Đảo Bến</div>
+        <div class="stage-title" id="stage-title">Đêm 1 — Đảo Bến</div>
         <div class="lantern-track" id="lantern-track">
           <span class="lantern-pill">🏮</span>
           <span class="lantern-pill">🏮</span>
@@ -524,9 +612,15 @@
       </div>
     </div>
 
+    <!-- SUBTITLE & ACCESSIBILITY ALERT -->
+    <div id="subtitle-banner">
+      <span id="sub-icon">⚠</span>
+      <span id="sub-text">Bóng Mực xuất hiện!</span>
+    </div>
+
     <!-- CONTEXT INTERACTION PROMPT -->
     <div id="interaction-prompt">
-      <span class="key-badge">E</span>
+      <span class="key-badge" id="prompt-key">E</span>
       <span id="prompt-text">Thắp Đèn Lồng Lớn</span>
     </div>
 
@@ -541,7 +635,7 @@
             <div class="skill-cd-overlay" id="cd-pulse"></div>
             <span>✨</span>
           </div>
-          <span class="skill-key">SPACE</span>
+          <span class="skill-key" id="key-pulse-label">SPACE</span>
         </div>
         <!-- DASH SKILL -->
         <div class="skill-slot">
@@ -549,16 +643,16 @@
             <div class="skill-cd-overlay" id="cd-dash"></div>
             <span>💨</span>
           </div>
-          <span class="skill-key">SHIFT</span>
+          <span class="skill-key" id="key-dash-label">SHIFT</span>
         </div>
       </div>
 
       <!-- CONTROLS GUIDE -->
       <div class="guide-chip">
         <div class="chip-item"><span class="chip-key">WASD</span> Di chuyển</div>
-        <div class="chip-item"><span class="chip-key">Q</span> Nhảy</div>
-        <div class="chip-item"><span class="chip-key">E</span> Tương tác</div>
-        <div class="chip-item"><span class="chip-key">C</span> Chế độ Mù Màu</div>
+        <div class="chip-item"><span class="chip-key" id="chip-jump">Q</span> Nhảy</div>
+        <div class="chip-item"><span class="chip-key" id="chip-interact">E</span> Nạp/Châm</div>
+        <div class="chip-item"><span class="chip-key">C</span> Bảng màu</div>
         <div class="chip-item"><span class="chip-key">R</span> Chơi lại</div>
       </div>
     </div>
@@ -571,10 +665,70 @@
       <div class="modal-subtitle">
         Cùng bé Mây thu thập đom đóm thần kỳ, thắp sáng 5 Đèn Lồng Cổ kính và bảo vệ Đảo Bến khỏi bầy Bóng Mực trước khi bình minh ló rạng.
       </div>
-      <button class="btn-action" id="btn-start">
-        <span>BẮT ĐẦU CHƠI</span> <span>🏮</span>
-      </button>
-      <button class="btn-secondary" id="btn-help">HƯỚNG DẪN</button>
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
+        <button class="btn-action" id="btn-start">
+          <span>BẮT ĐẦU CHƠI</span> <span>🏮</span>
+        </button>
+        <button class="btn-secondary" id="btn-open-leaderboard">BẢNG XẾP HẠNG 🏆</button>
+      </div>
+      <div style="display:flex; justify-content:center; gap:8px;">
+        <button class="btn-secondary" id="btn-access">CÀI ĐẶT TRỢ NĂNG ⚙️</button>
+        <button class="btn-secondary" id="btn-help">HƯỚNG DẪN 📜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD MODAL -->
+  <div class="modal-backdrop" id="leaderboard-modal">
+    <div class="game-modal" style="max-width: 620px;">
+      <div class="modal-title">BẢNG XẾP HẠNG TOP 10</div>
+      <div class="modal-subtitle">Các anh hùng thắp sáng Đảo Bến xuất sắc nhất</div>
+      <table class="lead-table">
+        <thead>
+          <tr>
+            <th>Hạng</th>
+            <th>Tên</th>
+            <th>Điểm</th>
+            <th>Đêm Thắng</th>
+            <th>Thời Gian</th>
+          </tr>
+        </thead>
+        <tbody id="lead-body">
+          <!-- Filled dynamically -->
+        </tbody>
+      </table>
+      <button class="btn-action" id="btn-close-lead">ĐÓNG</button>
+    </div>
+  </div>
+
+  <!-- ACCESSIBILITY & CONTROLS MODAL -->
+  <div class="modal-backdrop" id="access-modal">
+    <div class="game-modal" style="max-width: 620px;">
+      <div class="modal-title" style="font-size: 22px;">CÀI ĐẶT TRỢ NĂNG & ĐỔI PHÍM</div>
+      <div class="modal-subtitle">Tùy biến phím bấm và các tùy chọn trợ năng</div>
+      
+      <div class="key-rebind-grid">
+        <div class="rebind-row"><span>Tiến:</span> <button class="rebind-btn" data-action="up">W</button></div>
+        <div class="rebind-row"><span>Lùi:</span> <button class="rebind-btn" data-action="down">S</button></div>
+        <div class="rebind-row"><span>Trái:</span> <button class="rebind-btn" data-action="left">A</button></div>
+        <div class="rebind-row"><span>Phải:</span> <button class="rebind-btn" data-action="right">D</button></div>
+        <div class="rebind-row"><span>Nhảy:</span> <button class="rebind-btn" data-action="jump">Q</button></div>
+        <div class="rebind-row"><span>Lướt:</span> <button class="rebind-btn" data-action="dash">Shift</button></div>
+        <div class="rebind-row"><span>Tương tác:</span> <button class="rebind-btn" data-action="interact">E</button></div>
+        <div class="rebind-row"><span>Tỏa sáng:</span> <button class="rebind-btn" data-action="pulse">Space</button></div>
+        <div class="rebind-row"><span>Tạm dừng:</span> <button class="rebind-btn" data-action="pause">P</button></div>
+      </div>
+      <div id="rebind-alert" style="color:#ff5a5f; font-size:12px; margin-bottom:12px; display:none;">Phím đã bị trùng! Vui lòng chọn phím khác.</div>
+
+      <div style="display:flex; justify-content:space-around; margin-bottom:20px; font-size:13px;">
+        <label><input type="checkbox" id="chk-reduced-motion"> Giảm chuyển động (Tắt rung)</label>
+        <label><input type="checkbox" id="chk-large-text"> Cỡ chữ lớn (×1.25)</label>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <button class="btn-action" id="btn-close-access">LƯU & ĐÓNG</button>
+        <button class="btn-secondary" id="btn-reset-keys">MẶC ĐỊNH</button>
+      </div>
     </div>
   </div>
 
@@ -612,6 +766,10 @@
           <span class="stat-val" id="win-lanterns">5/5</span>
         </div>
       </div>
+      <div class="name-input-box">
+        <input type="text" class="name-input" id="win-player-name" placeholder="Tên anh hùng (3-12 ký tự)" maxlength="12">
+        <button class="btn-action" id="btn-save-score-win" style="padding:10px 20px;">LƯU ĐIỂM</button>
+      </div>
       <button class="btn-action" id="btn-restart-win">
         <span>CHƠI LẠI [R]</span> <span>🔄</span>
       </button>
@@ -634,6 +792,10 @@
           <span class="stat-label">Đèn Còn Sáng</span>
           <span class="stat-val" id="lose-lanterns">0/5</span>
         </div>
+      </div>
+      <div class="name-input-box">
+        <input type="text" class="name-input" id="lose-player-name" placeholder="Tên người chơi" maxlength="12">
+        <button class="btn-action" id="btn-save-score-lose" style="padding:10px 20px;">LƯU ĐIỂM</button>
       </div>
       <button class="btn-action" id="btn-restart-lose">
         <span>THỬ LẠI [R]</span> <span>🔄</span>

@@ -234,10 +234,10 @@ function assert(cond, msg) {
   assert(aContent === bContent, '16 deterministic: two runs produce identical JSONL');
 }
 
-// ── 17. Contract version is 1.2 ──────────────────────────────────────────────
+// ── 17. Contract version is 1.2 or higher (1.3 in Phase 4) ───────────────────
 {
   const contract = require('../game.contract.json');
-  assert(contract.contract_version === '1.2', '17 contract_version is 1.2');
+  assert(contract.contract_version === '1.2' || contract.contract_version === '1.3', '17 contract_version is 1.2 or 1.3');
   assert(typeof contract.tuning.fuel_max === 'number', '17b fuel_max in contract');
   assert(typeof contract.tuning.drain_per_s === 'number', '17c drain_per_s in contract');
   assert(typeof contract.tuning.win_ratio === 'number', '17d win_ratio in contract');

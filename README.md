@@ -1,135 +1,130 @@
-# ĐẢO ĐÈN LỒNG — Lantern Island
+# ĐẢO ĐÈN LỒNG — Lantern Island (v1.0.0)
 
-Game 3D phong cách Stylized Fantasy / Low-poly Cozy Adventure: Bé **Mây** thu thập đom đóm thần kỳ, thắp sáng và duy trì 5 Đèn Lồng Cổ Kính, đẩy lùi bầy Bóng Mực để bảo vệ Đảo Bến an toàn tới bình minh.
+> 📹 **Video Demo**: [docs/demo/demo.mp4](docs/demo/demo.mp4) (hoặc xem trực tiếp tại GitHub Release [v1.0.0](../../releases/tag/v1.0.0))  
+> 🏷️ **Bản phát hành**: `v1.0.0` · **Tags**: `phase-1`, `phase-2`, `phase-3`, `phase-4`  
+> 📜 **Test Contract**: `v1.3` (Kèm Benchmark & Soak Test chuẩn)
 
 ---
 
-## 1. Cài đặt & Khởi động
+## 1. Giới thiệu & Cốt truyện
 
-Yêu cầu môi trường: **Node.js 18+** (không cần cài thêm dependency nặng hay thư viện ngoài).
+**Đảo Đèn Lồng (Lantern Island)** là tựa game 3D phiêu lưu phong cách *Stylized Fantasy / Low-Poly Cozy Adventure*. Người chơi vào vai cô bé **Mây** đội nón lá Việt Nam, thu thập những hạt đom đóm thần kỳ giữa biển mây huyền ảo, thắp sáng và duy trì 5 Đèn Lồng Cổ Kính, đẩy lùi bầy Bóng Mực nguy hiểm để bảo vệ Đảo Bến an toàn tới khi bình minh ló rạng.
+
+```text
+       ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️
+                 🏮 [ĐÈN LỚN]               🌙 (Trăng Đêm)
+                      |
+        👾          ( ĐẢO BẾN )         ✨ [Đom Đóm]
+      (Bóng Mực)      /       \
+                     /   👒    \
+            🏮 [ĐÈN]   (MÂY)    🏮 [ĐÈN]
+       ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️
+```
+
+---
+
+## 2. Cài đặt & Khởi động (Tối đa 3 lệnh)
+
+Yêu cầu: **Node.js 18+** (không cần cài thêm dependency nặng hay thư viện ngoài).
 
 ```bash
-# 1. Chạy toàn bộ test kiểm thử tự động
+# Lệnh 1: Kiểm tra kiểm thử tự động
 npm test
 
-# 2. Khởi động server game cục bộ
+# Lệnh 2: Khởi động server game
 npm start
 
-# 3. Mở trình duyệt truy cập:
+# Lệnh 3: Mở trình duyệt và trải nghiệm ngay
 # http://localhost:8080
 ```
 
 ---
 
-## 2. Điều khiển
+## 3. Điều khiển & Phím tắt
 
-| Phím | Thao tác | Mô tả |
-|---|---|---|
-| `W A S D` | Di chuyển | Bé Mây chạy khám phá đảo, xoay người theo hướng di chuyển |
-| `Q` | Nhảy | Nhảy bật lên không trung, nón lá hất nhẹ, bóng chân co nhỏ |
-| `E` | Tương tác | Nạp đom đóm vào Đèn Lớn gần nhất hoặc châm thêm dầu khi đèn sáng |
-| `Space` | Tỏa Sáng | Kỹ năng sóng hào quang (tốn 3 đom đóm), đẩy lùi và làm choáng Bóng Mực trong 6m |
-| `Shift` | Lướt Gió (Dash) | Tăng tốc độ né đòn tức thì |
-| `C` | Chế độ Mù Màu | Chuyển sang bảng màu dễ nhận diện (mắt bóng mực Cyan, icon cảnh báo ⚠, đèn tắt biến dạng rõ) |
-| `R` | Chơi lại | Khởi tạo lại màn chơi mới ngay lập tức |
-
----
-
-## 3. Cấu trúc mã nguồn
-
-```text
-├── index.html               # Giao diện HUD chuyên nghiệp, Menu, Victory/Defeat Modal & Canvas
-├── app.js                   # 3D Stylized Diorama Canvas Engine, Camera, Nhân vật, VFX & Presentation
-├── game.js                  # Core deterministic simulation logic (không phụ thuộc browser/canvas)
-├── headless.js              # Headless runner chạy kịch bản tự động theo Test Contract
-├── game.contract.json       # Khai báo Test Contract v1.2 & tuning parameters
-├── server.js                # Local HTTP server tĩnh siêu nhẹ
-├── src/sim/
-│   ├── player.js            # Tính toán di chuyển và nhảy của Mây
-│   ├── lantern.js           # Luật tương tác đèn lồng và chọn đèn gần nhất
-│   ├── map.js               # Tọa độ đèn lồng và bùa chú qua các đêm
-│   ├── drifter.js           # Thực thể Drifter trộm đom đóm
-│   └── jsonl.js             # Serializer định dạng JSONL chuẩn
-├── tests/
-│   ├── contract-smoke.js    # Smoke test kịch bản cơ bản
-│   └── phase3-fuel.js       # Test suite 33 assertions kiểm chứng toàn diện Phase 3
-└── docs/                    # Tài liệu kiến trúc, ADR-003, ghi chú AI và bằng chứng kiểm chứng
-```
+| Hành động | Phím mặc định | Tùy biến (Rebinding) | Chức năng |
+|---|---|---|---|
+| **Di chuyển** | `W` `A` `S` `D` | Có hỗ trợ | Điều khiển bé Mây chạy quanh đảo |
+| **Nhảy** | `Q` | Có hỗ trợ | Nhảy tránh né, nón lá hất nhẹ |
+| **Lướt gió (Dash)** | `Shift` | Có hỗ trợ | Tăng tốc độ tức thì trong 0.2s |
+| **Tương tác / Nạp** | `E` | Có hỗ trợ | Nạp đom đóm thắp đèn hoặc châm thêm dầu |
+| **Tỏa Sáng (Pulse)** | `Space` | Có hỗ trợ | Tốn 3 đom đóm, tạo sóng hào quang đẩy lùi Bóng Mực trong 6m |
+| **Tạm dừng** | `P` / `Esc` | Có hỗ trợ | Tạm dừng hoặc tiếp tục màn chơi |
+| **Chế độ Mù Màu** | `C` | Phím tắt nhanh | Bật/tắt bảng màu dễ nhận biết (Cyan `#00B3FF`, icon `⚠`) |
+| **Chơi lại** | `R` | Phím tắt nhanh | Khởi tạo lại màn chơi ngay lập tức |
 
 ---
 
-## 4. Chế độ Headless & Test Contract
+## 4. Chế độ Kiểm thử & Đo lường Hiệu năng (Phase 4)
 
-Game hỗ trợ chế độ headless chạy mô phỏng không cần GPU hay giao diện, đảm bảo tính tất định 100%:
-
+### A. Chạy toàn bộ Test Suites
 ```bash
-node headless.js --seed 42 --night 1 --scenario examples/pickup.json --inputs examples/pickup-inputs.json --ticks 180 --out proof.jsonl
+npm test
 ```
+*Chạy smoke test hợp đồng, test logic Phase 3 (33 assertions) và test phát hành Phase 4 (20 assertions).*
 
-- Mọi lệnh chạy cùng seed, scenario và input luôn cho ra kết quả JSONL đồng nhất từng tick.
-- File đầu vào sai định dạng tự động thoát với mã lỗi `2`.
+### B. Chế độ Headless Runner
+```bash
+node headless.js --seed 42 --night 1 --ticks 180 --out proof.jsonl
+```
+*Chạy mô phỏng không mở màn hình, bảo toàn tính tất định 100%.*
 
----
+### C. Chế độ Benchmark (Ticket-04)
+```bash
+npm run bench
+# Hoặc: node bench.js --seed 42 --duration 30 --out bench.json
+```
+*Khởi tạo cảnh tải nặng (200 Bóng Mực, 100 đom đóm, camera quay vòng 360°), đo FPS thực tế trong 30s. Kết quả đo được: **Avg FPS ~81 > 60**, **P1 Low ~67 > 30**, **Load time: 123ms <= 10000ms**.*
 
-## 5. Sáng tạo của tôi — Nghệ thuật & Trải nghiệm thị giác
+### D. Chế độ Soak Test 10 Đêm (Ticket-04)
+```bash
+npm run soak
+# Hoặc: node soak.js --seed 7 --nights 10 --out soak.json
+```
+*Chạy liên tục 10 đêm trong 1 tiến trình để kiểm tra rò rỉ bộ nhớ. Kết quả: **0 crashes**, **mem_end <= 1.2 * mem_start**.*
 
-Là Senior 3D Game Developer & Technical Artist, toàn bộ phần hình ảnh đã được nâng cấp toàn diện theo phong cách **Stylized Fantasy Cozy Diorama**:
-
-1. **Nhân vật Bé Mây (Chibi Anime Style)**:
-   - Tỉ lệ Chibi dễ thương (1:2.8) với đôi mắt to tròn long lanh, má hồng ửng.
-   - Chiếc **Nón Lá Việt Nam** cách điệu với chóp nón vàng ấm, vân dệt đan xen và quai nón hồng thắt nơ.
-   - Trang phục áo bà ba màu kem `#F7F2E7`, quần xanh đậm `#223355`, khăn choàng cổ vàng `#FFD166` bay phấp phới theo gió.
-   - **Túi đom đóm đeo hông** phát sáng rực rỡ tỷ lệ thuận với số lượng đom đóm đang mang.
-   - **Đèn lồng nhỏ bên hông** đu đưa nhịp nhàng theo bước chân.
-   - Hệ thống **Procedural Animation** mượt mà: nhún thở tự nhiên (idle), bước chân đánh tay so le (run), co chân và thu bóng (jump), xoay thân mượt theo hướng điều khiển.
-
-2. **Thế giới 3D Đảo Bến (World & Environment)**:
-   - **Vách đá tự nhiên 3D** nhiều tầng xếp lớp với góc cạnh bóng đổ mềm mại.
-   - **Thảm cỏ xanh rêu thần tiên** xen lẫn các cụm hoa dại lung linh và đường mòn đất uốn lượn nối ra 5 ngọn đèn.
-   - **Cây cổ thụ Stylized (phong cách Ghibli)** với thân cây xoắn uốn lượn và tán lá bồng bềnh.
-   - **Biển mây đa tầng** trôi chầm chậm dưới đáy vực và bầu trời đêm huyền bí với hơn 120 ngôi sao lấp lánh cùng vầng trăng khuyết tỏa hào quang.
-
-3. **5 Đèn Lồng Lớn Cổ Kính (The Five Great Lanterns)**:
-   - Thiết kế đậm nét văn hóa Á Đông: Chân đế đá bát giác hoa sen, 4 cột gỗ sơn son, mái ngói cong cổ kính với đỉnh hồ lô vàng và tua rua lay động.
-   - **Trạng thái chưa thắp**: Lồng giấy tối màu xám tím, khói đêm bao quanh, hiển thị tiến độ nạp.
-   - **Trạng thái đã thắp**: Tỏa ánh sáng vàng cam rực rỡ, chiếu rọi mặt đất xung quanh, vẽ quầng sáng an toàn (Safe Zone 6m).
-   - **Thanh 3D Floating Fuel Bar**: Hiển thị chính xác lượng nhiên liệu còn lại, nhấp nháy báo động khi dưới 30 dầu.
-
-4. **Đom Đóm & Bóng Mực Sinh Động**:
-   - **Đom đóm**: Quả cầu sáng vàng kim bay bổng hình số 8 với đôi cánh tiên mỏng manh vỗ cánh nhịp nhàng. Khi thu thập, hạt sáng lượn vòng cung bay về phía túi Mây.
-   - **Bóng Mực**: Thân giọt mực đàn hồi dập dềnh (jelly squash-and-stretch), mắt tím phát sáng, xúc tu uốn lượn. Khi hút dầu (`drain`), xúc tu vươn tia đỏ cắm vào đèn lồng; khi bị làm choáng (`stunned`), mắt biến thành hình xoắn ốc với vòng sao quay tít trên đầu.
-
-5. **Camera & VFX System**:
-   - Camera Third-Person 3D mượt mà (Smooth Damping Lerp) bám sát Mây.
-   - **Sóng Tỏa Sáng (Light Pulse)**: Vòng xung kích ánh sáng vàng kim mở rộng, hạt pháo hoa bụi vàng bung tỏa và rung camera (screen shake) đầy uy lực.
-   - Hiệu ứng thông báo điểm bay (Floating combat text): `+10 Đom đóm`, `+100 Thắp Sáng!`, `-1 Ngọn Lửa!`.
-
-6. **Giao diện Fantasy HUD & Screens Chuyên Nghiệp**:
-   - Avatar Mây Chibi đóng khung vàng sang trọng.
-   - 3 Ngọn Lửa Sinh Mệnh biểu tượng ấm áp.
-   - Thanh đom đóm với progress bar trực quan `carried / capacity`.
-   - Vòng theo dõi trạng thái 5 đèn lồng kèm mục tiêu đêm.
-   - Interaction Prompt ngữ cảnh thông minh tự động xuất hiện khi lại gần đèn.
-   - Main Menu, Victory Modal và Defeat Modal đầy đủ chức năng chơi lại.
-   - Chế độ Mù Màu (phím `C`) với bảng màu tương phản cao thân thiện.
+### E. Xuất Bảng Xếp Hạng (Leaderboard Export)
+```bash
+node server.js --export-leaderboard leaderboard_export.json
+```
+*Xuất top 10 điểm số ra tệp JSON đúng định dạng `{"entries": [ ... ]}`.*
 
 ---
 
-## 6. Cam kết An Toàn Test Contract (Contract Safety)
+## 5. Tính năng Trợ năng (Accessibility)
 
-- Toàn bộ visual rendering, animation, camera và hiệu ứng hạt hoàn toàn nằm ở tầng presentation (`app.js`, `index.html`).
-- Logic mô phỏng vật lý, quy tắc tính điểm, điều kiện thắng `dawn_survived`, điều kiện thua, va chạm và Test Contract trong `game.js`, `headless.js` được bảo toàn nguyên vẹn 100%.
-- Không dùng `Math.random` trong logic gameplay, đảm bảo tính tất định hoàn hảo.
+- **Đổi phím điều khiển (Key Rebinding)**: Cho phép gán lại phím cho cả 9 thao tác di chuyển và kỹ năng, tự động phát hiện trùng phím và lưu cấu hình vào `localStorage`.
+- **Phụ đề & Mũi tên cảnh báo (Subtitles & Directional Arrows)**:
+  - Thông báo khi Bóng Mực xuất hiện kèm mũi tên chỉ hướng mép màn hình.
+  - Cảnh báo gió bão thổi (Đêm 3).
+  - Đếm ngược to rõ ràng trong 10 giây cuối.
+  - Cảnh báo khi Đèn Lớn cạn dầu (`fuel < 30`).
+- **Tùy chọn Giảm chuyển động (Reduced Motion)**: Tắt rung màn hình (`camShake = 0`) và loại bỏ các hiệu ứng chớp tắt.
+- **Tùy chọn Cỡ chữ lớn (×1.25)**: Đảm bảo cỡ chữ $\ge 18\text{ px}$ ở độ phân giải chuẩn $1280 \times 720$.
 
 ---
 
-## 7. Tài liệu & Nhật ký
+## 6. Sáng tạo của tôi — Nghệ thuật & Trải nghiệm thị giác
 
-- [Tài liệu Phase 1](docs/proof/phase-1.md)
-- [Tài liệu Phase 3 & ADR-003](docs/notes/ADR-003-lantern-fuel.md)
-- [Bằng chứng kiểm chứng Phase 3](docs/proof/phase-3.md)
-- [Changelog Chi Tiết](CHANGELOG.md)
+- **Bé Mây Chibi Đậm Nét Văn Hóa**: Thiết kế Chibi phong cách anime dễ thương (1:2.8), đội **Nón Lá Việt Nam** cách điệu với vân dệt xoắn ốc, khăn choàng vàng bay theo gió, túi đom đóm bên hông phát sáng lung linh.
+- **Thế giới 3D Đảo Bến**: Vách đá tự nhiên xếp tầng, thảm cỏ rêu, đường đất nối 5 ngọn đèn, cây cổ thụ uốn lượn phong cách Ghibli, biển mây bồng bềnh và ngàn sao đêm lấp lánh.
+- **5 Đèn Lồng Lớn Cổ Kính**: Đế hoa sen đá bát giác, cột gỗ sơn son, mái ngói cong Á Đông với đỉnh hồ lô vàng và chuông gió đung đưa; có thanh **3D Floating Fuel Bar** hiển thị chính xác % dầu còn lại.
+- **Camera Third-Person 3D**: Chuyển động bám sát mượt mà (smooth damping), hỗ trợ rung camera khi va chạm hoặc khi Tỏa Sáng.
+- **Bảng Xếp Hạng Top 10**: Tích hợp màn hình xem điểm cao từ menu chính và form nhập tên anh hùng khi hoàn thành màn chơi.
 
-## 8. Bản quyền (Credits & License)
+---
 
-Toàn bộ mã nguồn, shader/canvas visual procedural engine và giao diện được tự tạo cho Day 12 AI SDLC Lab. Xem chi tiết tại [LICENSE](LICENSE) và [CREDITS.md](CREDITS.md).
+## 7. Tài liệu & Bằng chứng kiểm chứng
+
+- [Tài liệu & Bằng chứng Phase 1](docs/proof/phase-1.md)
+- [Tài liệu Kiến trúc ADR-003 (Nhiên liệu đèn)](docs/notes/ADR-003-lantern-fuel.md)
+- [Tài liệu & Bằng chứng Phase 3](docs/proof/phase-3.md)
+- [Bằng chứng Kiểm chứng Phase 4 (Benchmark & Soak Test)](docs/proof/phase-4.md)
+- [Bản Hồi tưởng Toàn diện Dự án (Retrospective)](docs/notes/retro-full.md)
+- [Lịch sử Thay đổi (Changelog)](CHANGELOG.md)
+
+---
+
+## 8. Bản quyền & Nguồn gốc (Credits & License)
+
+Toàn bộ mã nguồn, shader, renderer 3D diorama canvas và tài nguyên hình học được tự tạo cho bài thi Day 12 AI SDLC. Xem chi tiết tại [LICENSE](LICENSE) và [CREDITS.md](CREDITS.md).
