@@ -117,6 +117,7 @@ node server.js --export-leaderboard leaderboard_export.json
 ## 7. Tài liệu & Bằng chứng kiểm chứng
 
 - [Tài liệu & Bằng chứng Phase 1](docs/proof/phase-1.md)
+- [Tài liệu & Bằng chứng Phase 2](docs/proof/phase-2.md)
 - [Tài liệu Kiến trúc ADR-003 (Nhiên liệu đèn)](docs/notes/ADR-003-lantern-fuel.md)
 - [Tài liệu & Bằng chứng Phase 3](docs/proof/phase-3.md)
 - [Bằng chứng Kiểm chứng Phase 4 (Benchmark & Soak Test)](docs/proof/phase-4.md)
