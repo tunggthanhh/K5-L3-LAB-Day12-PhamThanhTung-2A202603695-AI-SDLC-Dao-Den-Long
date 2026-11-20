@@ -85,3 +85,4 @@ Kết quả:
 - [x] **Giảm chuyển động (Reduced Motion)**: Tùy chọn triệt tiêu rung camera (`camShake = 0`) và các hiệu ứng chớp tắt.
 - [x] **Cỡ chữ UI lớn (×1.25)**: Đảm bảo độ rõ nét tối thiểu $\ge 18\text{ px}$ ở độ phân giải $1280 \times 720$.
 - [x] **Chế độ Mù Màu (Colorblind Mode)**: Phím `C` chuyển sang bảng màu độ tương phản cao, mắt Bóng Mực đổi sang màu Cyan `#00B3FF`, đèn tắt có hình dáng biến dạng xẹp $20\%$.
+

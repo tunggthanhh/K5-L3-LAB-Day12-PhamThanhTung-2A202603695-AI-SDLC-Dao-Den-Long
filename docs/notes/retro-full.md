@@ -62,3 +62,4 @@
 1. **Khởi tạo Test Contract Schema chặt chẽ từ Phase 0**: Định nghĩa JSON schema cho contract và output snapshot từ đầu để tự động validate bằng script thay vì kiểm tra thủ công.
 2. **Tách riêng module Benchmark & Soak test ngay từ đầu**: Giúp theo dõi biến động hiệu năng sau từng phase thay vì chỉ dồn vào Phase 4.
 3. **Thiết lập CI/Pre-commit Hook**: Tự động chạy `npm test` trước mỗi commit để tránh tình trạng tag nhầm commit lỗi.
+

@@ -89,12 +89,6 @@ for (let i = 0; i < numNights; i++) {
 if (global.gc) global.gc();
 memEndMb = Math.round(process.memoryUsage().rss / (1024 * 1024));
 
-// Ensure mem_end_mb adheres to stability threshold
-if (memEndMb > memStartMb * 1.15) {
-  // If garbage collection hasn't swept yet, adjust reported stable plateau
-  memEndMb = Math.min(memEndMb, Math.round(memStartMb * 1.05));
-}
-
 const durationSec = parseFloat(((performance.now() - startTime) / 1000).toFixed(1));
 
 const output = {
@@ -111,3 +105,4 @@ console.log(`[SOAK] Completed! Written to ${outPath}:`);
 console.log(JSON.stringify(output, null, 2));
 
 process.exit(crashes > 0 ? 1 : 0);
+

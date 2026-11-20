@@ -14,3 +14,4 @@ Hướng dẫn nộp video demo theo yêu cầu Day 12 AI SDLC:
     gh release upload v1.0.0 demo.mp4
     ```
   - Cách 2: Lưu tệp tại `docs/demo/demo.mp4` (dưới 100 MB).
+

@@ -175,12 +175,40 @@
   let camX = 0;
   let camZ = 0;
   let camShake = 0;
+  let camYaw = 0; // Third-person camera rotation angle (radians)
+  let camZoom = 1.0; // Third-person camera zoom level
+  let isDraggingMouse = false;
+  let lastMouseX = 0;
   let facingAngle = Math.PI * 0.5;
   let playerAnimTime = 0;
   let prevCarried = 0;
   let prevFlames = 3;
   let prevLitCount = 0;
   let tenSecAlertTriggered = false;
+
+  // Mouse camera drag & zoom controls
+  window.addEventListener("mousedown", (e) => {
+    if (e.target === canvas) {
+      isDraggingMouse = true;
+      lastMouseX = e.clientX;
+    }
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (isDraggingMouse) {
+      const dx = e.clientX - lastMouseX;
+      lastMouseX = e.clientX;
+      camYaw += dx * 0.006;
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    isDraggingMouse = false;
+  });
+
+  window.addEventListener("wheel", (e) => {
+    camZoom = Math.max(0.7, Math.min(1.5, camZoom - e.deltaY * 0.001));
+  }, { passive: true });
 
   // Particle & VFX Systems
   const particles = [];
@@ -396,73 +424,133 @@
 
   elMenuModal.classList.add("open");
 
-  // --- 3D PROJECTION SYSTEM ---
+  // --- 3D PROJECTION SYSTEM WITH THIRD-PERSON ORBIT & PERSPECTIVE ---
   function project(x, y, z) {
-    const scale = Math.min(canvas.width, canvas.height) / 70;
+    const scaleBase = (Math.min(canvas.width, canvas.height) / 65) * camZoom;
+    const cosYaw = Math.cos(camYaw);
+    const sinYaw = Math.sin(camYaw);
+
     const relX = x - camX;
     const relZ = z - camZ;
-    const tilt = 0.48;
 
-    const screenX = canvas.width / 2 + relX * scale;
-    const screenY = canvas.height * 0.54 + relZ * scale * tilt - y * scale;
-    const depth = relZ + y * 0.1;
+    // Rotate relative coords around camera yaw
+    const rotX = relX * cosYaw - relZ * sinYaw;
+    const rotZ = relX * sinYaw + relZ * cosYaw;
+
+    // Perspective depth attenuation: objects closer to camera appear slightly larger
+    const depthFactor = 1.0 / (1.0 + rotZ * 0.007);
+    const scale = scaleBase * depthFactor;
+    const tilt = 0.52; // Third-person tilt angle
+
+    const screenX = canvas.width / 2 + rotX * scale;
+    const screenY = canvas.height * 0.58 + rotZ * scale * tilt - y * scale;
+    const depth = rotZ + y * 0.1;
 
     return { x: screenX, y: screenY, depth, scale };
   }
 
-  // --- WORLD & DECORATIONS ---
-  function seededRng(seed) {
-    let s = seed >>> 0 || 1;
-    return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
-  }
-
-  function generateSkyStars(count) {
-    const rng = seededRng(1337);
-    const stars = [];
-    for (let i = 0; i < count; i++) {
-      stars.push({
-        x: rng(),
-        y: rng() * 0.65,
-        r: 0.8 + rng() * 1.6,
-        twinkleSpeed: 1 + rng() * 3,
-        twinkleOffset: rng() * Math.PI * 2,
-        color: rng() > 0.3 ? "#FFE8A3" : "#CBE4FF",
-      });
-    }
-    return stars;
-  }
+  // --- SOLID OBSTACLES & PHYSICS COLLISION SYSTEM ---
+  const solidObstacles = [];
 
   function generateIslandDecorations(seed) {
     const rng = seededRng(seed);
     const decor = [];
+    solidObstacles.length = 0;
 
-    const treeAngles = [0.3, 1.1, 2.2, 3.4, 4.6, 5.7];
-    for (let i = 0; i < treeAngles.length; i++) {
-      const a = treeAngles[i] + (rng() - 0.5) * 0.2;
-      const dist = 18 + rng() * 12;
-      decor.push({
-        type: "tree",
-        x: Math.cos(a) * dist,
+    // 1. Giant Ancient Banyan Trees with thick trunks & collision (Radius: 2.4m)
+    const giantTreeAngles = [0.4, 1.25, 2.1, 3.3, 4.4, 5.5];
+    for (let i = 0; i < giantTreeAngles.length; i++) {
+      const a = giantTreeAngles[i];
+      const dist = 20 + rng() * 10;
+      const x = Math.cos(a) * dist;
+      const z = Math.sin(a) * dist;
+      const treeObj = {
+        type: "giant_tree",
+        x,
         y: 0,
-        z: Math.sin(a) * dist,
-        height: 28 + rng() * 10,
-        canopyRadius: 18 + rng() * 6,
-        hue: rng() > 0.5 ? "#2d4e39" : "#3b6348",
-      });
+        z,
+        radius: 2.4, // Solid collider radius
+        height: 38 + rng() * 8,
+        canopyRadius: 22 + rng() * 6,
+        hue: rng() > 0.5 ? "#24422e" : "#2f573d",
+      };
+      decor.push(treeObj);
+      solidObstacles.push({ x, z, radius: treeObj.radius });
     }
 
-    for (let i = 0; i < 18; i++) {
+    // 2. Ancient Megalith Boulders / Cự Thạch Khổng Lồ (Radius: 2.2m)
+    const boulderAngles = [0.8, 1.8, 2.8, 3.9, 4.9, 5.9, 0.1, 2.5, 4.1];
+    for (let i = 0; i < boulderAngles.length; i++) {
+      const a = boulderAngles[i];
+      const dist = 14 + rng() * 18;
+      const x = Math.cos(a) * dist;
+      const z = Math.sin(a) * dist;
+      const rockObj = {
+        type: "boulder",
+        x,
+        y: 0,
+        z,
+        radius: 2.2, // Solid collider radius
+        size: 14 + rng() * 6,
+      };
+      decor.push(rockObj);
+      solidObstacles.push({ x, z, radius: rockObj.radius });
+    }
+
+    // 3. Wooden Harbor Crates & Barrels / Cụm Thùng Gỗ & Rương (Radius: 1.8m)
+    const cratePositions = [
+      [-8, 12], [8, 12], [-14, -6], [14, -6],
+      [-10, -18], [10, -18], [-5, 22], [5, 22]
+    ];
+    for (const cp of cratePositions) {
+      const x = cp[0];
+      const z = cp[1];
+      const crateObj = {
+        type: "crates",
+        x,
+        y: 0,
+        z,
+        radius: 1.8,
+        stackHeight: 1 + Math.floor(rng() * 2),
+      };
+      decor.push(crateObj);
+      solidObstacles.push({ x, z, radius: crateObj.radius });
+    }
+
+    // 4. Ancient Ruins Stone Pillars / Cột Đá Phế Tích Cổ (Radius: 1.9m)
+    const pillarPositions = [
+      [-18, 6], [18, 6], [6, -26], [-6, -26],
+      [-22, -12], [22, -12]
+    ];
+    for (const pp of pillarPositions) {
+      const x = pp[0];
+      const z = pp[1];
+      const pillarObj = {
+        type: "ruin_pillar",
+        x,
+        y: 0,
+        z,
+        radius: 1.9,
+        height: 22 + rng() * 10,
+      };
+      decor.push(pillarObj);
+      solidObstacles.push({ x, z, radius: pillarObj.radius });
+    }
+
+    // 5. Small Medium Rocks
+    for (let i = 0; i < 16; i++) {
       const a = rng() * Math.PI * 2;
-      const dist = 8 + rng() * 26;
+      const dist = 10 + rng() * 24;
       decor.push({
         type: "rock",
         x: Math.cos(a) * dist,
         y: 0,
         z: Math.sin(a) * dist,
-        size: 5 + rng() * 7,
+        size: 5 + rng() * 6,
       });
     }
 
+    // 6. Glowing Wildflowers & Bush Clumps
     for (let i = 0; i < 40; i++) {
       const a = rng() * Math.PI * 2;
       const dist = 4 + rng() * 32;
@@ -475,16 +563,56 @@
       });
     }
 
+    // 7. Wooden Fence Pier
     for (let i = -3; i <= 3; i++) {
+      const fx = i * 4;
+      const fz = 32 + Math.abs(i) * 0.5;
       decor.push({
         type: "fence",
-        x: i * 4,
+        x: fx,
         y: 0,
-        z: 32 + Math.abs(i) * 0.5,
+        z: fz,
       });
+      solidObstacles.push({ x: fx, z: fz, radius: 1.2 });
+    }
+
+    // 8. The 5 Great Lantern Bases as Solid Pillars (Radius: 1.8m)
+    for (const l of sim.lanterns) {
+      solidObstacles.push({ x: l.pos[0], z: l.pos[2], radius: 1.8 });
     }
 
     return decor;
+  }
+
+  // --- PHYSICAL COLLISION RESOLVER FOR OBSTACLES ---
+  function resolvePlayerObstacleCollisions() {
+    const playerRadius = 0.85;
+    for (const obs of solidObstacles) {
+      const dx = sim.player.pos[0] - obs.x;
+      const dz = sim.player.pos[2] - obs.z;
+      const dist = Math.hypot(dx, dz);
+      const minDist = obs.radius + playerRadius;
+
+      if (dist < minDist) {
+        const overlap = minDist - dist;
+        if (dist === 0) {
+          sim.player.pos[0] += 0.05;
+        } else {
+          sim.player.pos[0] += (dx / dist) * overlap;
+          sim.player.pos[2] += (dz / dist) * overlap;
+        }
+      }
+    }
+
+    // Island Cliff Boundary: keep player within island perimeter (38m)
+    const islandDist = Math.hypot(sim.player.pos[0], sim.player.pos[2]);
+    const maxBoundary = 37.5;
+    if (islandDist > maxBoundary) {
+      const nx = sim.player.pos[0] / islandDist;
+      const nz = sim.player.pos[2] / islandDist;
+      sim.player.pos[0] = nx * maxBoundary;
+      sim.player.pos[2] = nz * maxBoundary;
+    }
   }
 
   // --- VFX & FLOATING LABELS ---
@@ -1220,31 +1348,100 @@
     ctx.save();
     ctx.translate(p.x, p.y);
 
-    if (d.type === "tree") {
+    if (d.type === "giant_tree" || d.type === "tree") {
+      // Tree trunk shadow
+      const trunkR = d.type === "giant_tree" ? 14 : 8;
       ctx.beginPath();
-      ctx.ellipse(0, 0, 8 * s, 4 * s, 0, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(10, 8, 20, 0.6)";
+      ctx.ellipse(0, 0, trunkR * s, (trunkR * 0.5) * s, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(10, 8, 20, 0.65)";
       ctx.fill();
 
-      ctx.fillStyle = "#4a3525";
+      // Thick curved trunk
+      const trunkW = d.type === "giant_tree" ? 12 : 5;
+      ctx.fillStyle = "#3d281a";
       ctx.beginPath();
-      ctx.moveTo(-4 * s, 0);
-      ctx.quadraticCurveTo(-6 * s, -d.height * 0.5 * s, 0, -d.height * s);
-      ctx.lineTo(5 * s, -d.height * s);
-      ctx.quadraticCurveTo(2 * s, -d.height * 0.5 * s, 5 * s, 0);
+      ctx.moveTo(-trunkW * s, 0);
+      ctx.quadraticCurveTo(-trunkW * 1.3 * s, -d.height * 0.5 * s, -trunkW * 0.6 * s, -d.height * s);
+      ctx.lineTo(trunkW * 0.6 * s, -d.height * s);
+      ctx.quadraticCurveTo(trunkW * 1.3 * s, -d.height * 0.5 * s, trunkW * s, 0);
       ctx.closePath();
       ctx.fill();
 
+      // Giant foliage canopy
       const canopyY = -d.height * s;
       ctx.beginPath();
       ctx.arc(0, canopyY, d.canopyRadius * s, 0, Math.PI * 2);
       ctx.fillStyle = d.hue;
       ctx.fill();
 
+      // Highlights
       ctx.beginPath();
-      ctx.arc(-4 * s, canopyY - 4 * s, d.canopyRadius * 0.6 * s, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+      ctx.arc(-d.canopyRadius * 0.3 * s, canopyY - d.canopyRadius * 0.25 * s, d.canopyRadius * 0.6 * s, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
       ctx.fill();
+    } else if (d.type === "boulder") {
+      // Large Megalith Boulder
+      ctx.beginPath();
+      ctx.ellipse(0, 0, d.size * s, (d.size * 0.55) * s, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(10, 8, 20, 0.6)";
+      ctx.fill();
+
+      // Boulder body
+      ctx.beginPath();
+      ctx.ellipse(0, -d.size * 0.45 * s, d.size * 0.95 * s, d.size * 0.7 * s, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#2c334d";
+      ctx.fill();
+      ctx.strokeStyle = "#464f73";
+      ctx.lineWidth = 2 * s;
+      ctx.stroke();
+
+      // Moss cap on boulder
+      ctx.beginPath();
+      ctx.arc(0, -d.size * 0.75 * s, d.size * 0.5 * s, Math.PI, 0, false);
+      ctx.fillStyle = "#3e664d";
+      ctx.fill();
+    } else if (d.type === "crates") {
+      // Wooden Crates stack
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 12 * s, 6 * s, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(10, 8, 20, 0.6)";
+      ctx.fill();
+
+      // Base Crate
+      ctx.fillStyle = "#734e2c";
+      ctx.fillRect(-10 * s, -14 * s, 20 * s, 14 * s);
+      ctx.strokeStyle = "#452b14";
+      ctx.lineWidth = 1.5 * s;
+      ctx.strokeRect(-10 * s, -14 * s, 20 * s, 14 * s);
+      // X brace
+      ctx.beginPath();
+      ctx.moveTo(-10 * s, -14 * s); ctx.lineTo(10 * s, 0);
+      ctx.moveTo(10 * s, -14 * s); ctx.lineTo(-10 * s, 0);
+      ctx.stroke();
+
+      // Top Crate if stacked
+      if (d.stackHeight > 1) {
+        ctx.fillStyle = "#8a5d34";
+        ctx.fillRect(-7 * s, -26 * s, 14 * s, 12 * s);
+        ctx.strokeRect(-7 * s, -26 * s, 14 * s, 12 * s);
+      }
+    } else if (d.type === "ruin_pillar") {
+      // Ancient Stone Ruin Pillar
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 10 * s, 5 * s, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(10, 8, 20, 0.6)";
+      ctx.fill();
+
+      // Pillar shaft
+      ctx.fillStyle = "#39415c";
+      ctx.fillRect(-8 * s, -d.height * s, 16 * s, d.height * s);
+      ctx.strokeStyle = "#5b678c";
+      ctx.lineWidth = 1.5 * s;
+      ctx.strokeRect(-8 * s, -d.height * s, 16 * s, d.height * s);
+
+      // Cracked top capital
+      ctx.fillStyle = "#4a5478";
+      ctx.fillRect(-10 * s, -d.height * s - 4 * s, 20 * s, 4 * s);
     } else if (d.type === "rock") {
       ctx.beginPath();
       ctx.ellipse(0, 0, d.size * s, d.size * 0.55 * s, 0, 0, Math.PI * 2);
@@ -1489,8 +1686,11 @@
           interact: !!keys[keyBindings.interact],
           pulse: !!keys[keyBindings.pulse],
           dash: !!keys[keyBindings.dash],
-          cam_yaw_deg: 0,
+          cam_yaw_deg: (camYaw * 180) / Math.PI,
         });
+
+        // Resolve 3D solid obstacle & island cliff collisions
+        resolvePlayerObstacleCollisions();
 
         for (const ev of events) {
           if (ev.name === "pulse") {

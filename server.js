@@ -5,6 +5,23 @@ const path = require('path');
 const root = __dirname;
 const LEADERBOARD_FILE = path.join(root, 'leaderboard.json');
 
+function normalizeLeaderboard(data) {
+  const entries = Array.isArray(data && data.entries) ? data.entries : [];
+  return {
+    entries: entries
+      .filter((entry) => entry && typeof entry.name === 'string' && Number.isFinite(entry.score))
+      .map((entry) => ({
+        name: entry.name.slice(0, 12),
+        score: entry.score,
+        nights_won: Number.isFinite(entry.nights_won) ? entry.nights_won : 0,
+        achieved_at: typeof entry.achieved_at === 'string' ? entry.achieved_at : new Date(0).toISOString(),
+        seed: Number.isFinite(entry.seed) ? entry.seed : 42
+      }))
+      .sort((a, b) => b.score - a.score || new Date(a.achieved_at) - new Date(b.achieved_at))
+      .slice(0, 10)
+  };
+}
+
 // --- CLI FLAG: --export-leaderboard out.json ---
 const args = process.argv.slice(2);
 const exportIdx = args.indexOf('--export-leaderboard');
@@ -16,7 +33,7 @@ if (exportIdx >= 0 && exportIdx + 1 < args.length) {
       data = JSON.parse(fs.readFileSync(LEADERBOARD_FILE, 'utf8'));
     } catch (e) {}
   }
-  fs.writeFileSync(outFile, JSON.stringify(data, null, 2) + '\n');
+  fs.writeFileSync(outFile, JSON.stringify(normalizeLeaderboard(data), null, 2) + '\n');
   console.log(`[LEADERBOARD] Exported to ${outFile}`);
   process.exit(0);
 }
@@ -37,7 +54,7 @@ function getLeaderboard() {
     return initial;
   }
   try {
-    return JSON.parse(fs.readFileSync(LEADERBOARD_FILE, 'utf8'));
+    return normalizeLeaderboard(JSON.parse(fs.readFileSync(LEADERBOARD_FILE, 'utf8')));
   } catch (e) {
     return { entries: [] };
   }
@@ -46,12 +63,9 @@ function getLeaderboard() {
 function saveLeaderboardEntry(entry) {
   const data = getLeaderboard();
   data.entries.push(entry);
-  // Sort descending by score, earlier timestamp on tie
-  data.entries.sort((a, b) => b.score - a.score || new Date(a.achieved_at) - new Date(b.achieved_at));
-  // Keep top 10
-  data.entries = data.entries.slice(0, 10);
-  fs.writeFileSync(LEADERBOARD_FILE, JSON.stringify(data, null, 2));
-  return data;
+  const normalized = normalizeLeaderboard(data);
+  fs.writeFileSync(LEADERBOARD_FILE, JSON.stringify(normalized, null, 2));
+  return normalized;
 }
 
 // HTTP Server
@@ -70,7 +84,7 @@ http.createServer((req, res) => {
       req.on('end', () => {
         try {
           const entry = JSON.parse(body);
-          if (!entry.name || typeof entry.score !== 'number') {
+          if (!entry.name || !Number.isFinite(entry.score)) {
             res.writeHead(400);
             return res.end('Invalid entry');
           }
@@ -93,8 +107,8 @@ http.createServer((req, res) => {
   }
 
   // Static File Server
-  let f = path.join(root, url === '/' ? 'index.html' : url);
-  if (!f.startsWith(root) || !fs.existsSync(f)) {
+  const f = path.resolve(root, `.${url === '/' ? '/index.html' : url}`);
+  if (!f.startsWith(`${root}${path.sep}`) || !fs.existsSync(f)) {
     res.writeHead(404);
     return res.end('Not found');
   }

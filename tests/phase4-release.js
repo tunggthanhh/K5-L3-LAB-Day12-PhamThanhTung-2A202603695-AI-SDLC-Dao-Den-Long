@@ -63,3 +63,4 @@ try {
 
 console.log(`phase 4 release test passed (${pass} assertions, ${fail} failures)`);
 if (fail > 0) process.exit(1);
+
